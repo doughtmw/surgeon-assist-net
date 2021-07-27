@@ -1,0 +1,9 @@
+{
+  "0": "CalotTriangleDissection",
+  "1": "CleaningCoagulation",
+  "2": "ClippingCutting",
+  "3": "GallbladderDissection",
+  "4": "GallbladderPackaging",
+  "5": "GallbladderRetraction",
+  "6": "Preparation"
+}
