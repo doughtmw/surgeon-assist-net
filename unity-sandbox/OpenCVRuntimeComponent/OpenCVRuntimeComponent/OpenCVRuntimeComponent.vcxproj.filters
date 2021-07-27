@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Resources">
+      <UniqueIdentifier>96a66b30-08b4-442c-be14-e0a67d88575b</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tga;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="pch.cpp" />
+    <ClCompile Include="CvUtils.cpp" />
+    <ClCompile Include="Trace.cpp" />
+    <ClCompile Include="BufferHelpers.cpp" />
+    <ClCompile Include="FormattedInputDataAndShape.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="pch.h" />
+    <ClInclude Include="CvUtils.h" />
+    <ClInclude Include="Trace.h" />
+    <ClInclude Include="BufferHelpers.h" />
+    <ClInclude Include="FormattedInputDataAndShape.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,5 @@
+data/venv/
+data/data_256/
+pytorch-sandbox/venv/
+pytorch-sandbox/.idea/
+pytorch-sandbox/__pycache__/
