@@ -137,7 +137,7 @@ ONNX converted model inference:
 
 ### Comparing accuracy and latency of PyTorch and ONNX converted models
 - Finally, the PyTorch model and ONNX model are used to comaparatively evaluate the latency and prediction accuracy on a subset of the test set
-- The average inference times measure in PyTorch and ONNX are output to the command line
+- The average inference times measured in PyTorch and ONNX are output to the command line
 ```
 Test progress: 100.00 % [500 / 500]
 Average PT inference: [574.898 ms] PT Acc: [0.60] Average ONNX inference: [107.329 ms] ONNX Acc: [0.60]
@@ -163,16 +163,16 @@ python .\main_benchmark.py --img_size='224,224' --other_model='SV_RCNet' --seq=1
 ```
 
 ## Evaluation 
-Evaluation of the best model weights is first performed using PyTorch and the resulting ground truth and predictions are saved to text files in the `results` folder (as described above). Detailed evaluation of these text files is performed in Matlab.
-- Using matlab tool located in `eval` folder, open the `Main.py` script
-- Text files are written out from each model test run to the `pytorch-sandbox/results` folder
+Evaluation of the best model weights is first performed using PyTorch and the resulting ground truth and predictions are saved to text files in the `results/` folder (as described above). Detailed evaluation of these text files is performed in Matlab.
+- Using matlab tool located in `eval/` folder, open the `Main.py` script
+- Text files are written out from each model test run to the `pytorch-sandbox/results/` folder
 - Change the model root folder parameter to point to the results folder (containing txt files) to be evaluated
 
 ```matlab
 model_rootfolder = "F:/Data/surgeon-assist-net/pytorch-sandbox/results/cholec80_256__feat_b0_lite__img_224__len_10__hsize_128__epo_18/";
 ```
 - After running the program using the default `ground_truth.txt` and `predictions.txt` results files, the accuracy metrics will be output to the console
-- Using our best trained model weights (weights included in the `weights` folder and model inference output in the `results` folder), we get the following output from our eval script
+- Using our best trained model weights (weights included in the `weights/` folder and model inference output in the `results/` folder), we get the following output from the evaluation script
 
 ```matlab
 >> Main
@@ -259,6 +259,7 @@ local_output: tensor([[ 0.1532, 5.9982, -0.3814, -4.1019, 0.9841, 1.8995, -4.383
 python .\scratchpad.py --onnx_model_name="onnx-models/b0_lite_1.onnx" --seq=1
 ```
 - The console output will give similar image statistics of the normalized input (as above) for normalization in PyTorch and OpenCV as well as the accompanying images
+- It is important that the OpenCV normalization matches what is performed in PyTorch to ensure that we receive the correct inference results when running online on the HoloLens 2
 ```
 ptImage.shape = (3, 224, 224)
 ptImage max = 4.3658137
@@ -275,7 +276,7 @@ video41_25 `(3, 256, 256)`  |  video41_25 normalized OpenCV `(3, 224, 224)` |  v
 :-------------------------:|:-------------------------:|:-------------------------:
 ![](pytorch-sandbox/onnx-models/video41_25.PNG)  |  ![](pytorch-sandbox/onnx-models/video41_25_normalized_opencv.PNG)|  ![](pytorch-sandbox/onnx-models/video41_25_normalized_pytorch.PNG)
 
-- We get the following output for the first sample of the test dataset (`video41_25`)
+- We get the following matching outputs for the first sample of the test dataset (`video41_25`)
 ```
 outputs opencv normalized:  [array([[ 0.1524404, 5.998244, -0.3819608, -4.101637, 0.9846859, 1.8998177, -4.383874 ]], dtype=float32)]
 
@@ -295,7 +296,7 @@ outputs pytorch normalized:  [array([[ 0.15243927, 5.998246, -0.3819655, -4.1016
 - Build and deploy the `.sln` to the HoloLens 2. An on-screen text window will output information as to the current model prediction label, prediction probability, and inference time 
   - Alternatively, the included `.appx` package can be installed directly to the HoloLens 2 device using the device portal 
   - `.appx` is located in the `unity-sandbox/HoloLens2-Machine-Learning/Builds/WSAPlayer/AppPackages/HoloLens-2-Machine-Learning/HoloLens-2-Machine-Learning_1.0.1.0_ARM_Test/` folder
-- The below image was recorded using the HoloLens 2 Device Portal capture window while viewing Video 41 of the Cholec80 dataset and using the `b0_lite_1.onnx` model for inference
+- The below image was recorded using the HoloLens 2 Device Portal capture window while viewing Video 41 of the Cholec80 dataset (~35 seconds in) and using the `b0_lite_1.onnx` model for inference
 
 ![](unity-sandbox/HoloLens2-Machine-Learning/cholec80_vid41_HoloLens.png)
 
