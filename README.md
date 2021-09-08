@@ -282,6 +282,18 @@ outputs opencv normalized:  [array([[ 0.1524404, 5.998244, -0.3819608, -4.101637
 
 outputs pytorch normalized:  [array([[ 0.15243927, 5.998246, -0.3819655, -4.1016374, 0.9846873, 1.8998195, -4.3838735 ]], dtype=float32)]
 ```
+
+#### 3. Evaluating model inference in Python with OpenCV and ONNX with the `scratchpad-video.py` script
+```
+python .\scratchpad-video.py --onnx_model_name="onnx-models/b0_lite_1.onnx" --seq=1
+```
+- A sample segment of `Video41` of the Cholec80 test partition is provided along with the ground truth labels
+- Qualitative performance and inference speed assessment using OpenCV and ONNX in a Python script
+- Queue structure to evaluate the performance of the provided ONNX model with a sequence length of 10 input frames
+- As in the below image, the current phase prediction (and latency in milliseconds) is shown relative to the ground truth prediction
+
+![](pytorch-sandbox/onnx-models/video41_inference.PNG)
+
 ### Deploy and run the sample on the HoloLens 2
 - *Optional*: If `OpenCVRuntimeComponent` was built from source, copy `.winmd`, `.dll` and `.lib` files from `OpenCVRuntimeComponent/ARM/(Release/Debug)/OpenCVRuntimeComponent/` to the Unity plugins directory `unity-sandbox/HoloLens2-Machine-Learning/Assets/Plugins/ARM/` folder
 - Open `HoloLens2-Machine-Learning` in Unity
