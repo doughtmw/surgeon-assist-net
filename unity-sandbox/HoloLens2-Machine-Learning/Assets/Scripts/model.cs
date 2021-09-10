@@ -5,8 +5,8 @@
 using System;
 using System.Threading.Tasks;
 using Windows.Storage.Streams;
-//using Windows.AI.MachineLearning;
-using Microsoft.AI.MachineLearning; // Requires .dll and .winmd files from the Microsoft.AI.MachineLearning nuget package to be copied to Assets/Plugins/ARM/
+using Windows.AI.MachineLearning;
+//using Microsoft.AI.MachineLearning; // Requires .dll and .winmd files from the Microsoft.AI.MachineLearning nuget package to be copied to Assets/Plugins/ARM/
 
 public sealed class CustomNetworkInput
 {

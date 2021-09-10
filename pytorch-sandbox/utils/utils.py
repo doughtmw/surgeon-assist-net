@@ -63,7 +63,7 @@ def export_to_onnx(model, params, onnx_model_name, best_model_str=None):
 
     # Export the onnx model
     # https://github.com/microsoft/onnxruntime/blob/master/docs/Versioning.md#version-matrix
-    torch.onnx.export(model, sample, 'onnx-models/' + onnx_model_name, opset_version=11, input_names=["input"], output_names=["output"])
+    torch.onnx.export(model, sample, 'onnx-models/' + onnx_model_name, opset_version=9, input_names=["input"], output_names=["output"])
 
     # Confirm onnx predictions are correct after export
     img_resized = np.load("onnx-models/input.npy")

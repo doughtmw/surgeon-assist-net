@@ -57,14 +57,21 @@ python .\extract-frames.py --video_dir='F:/Data/cholec80/videos/' --out_dir='dat
 Includes the resources for data formatting, loading, training, and export of a deep learning model for the prediction of surgical tasks from input video frames.
 
 ### Run sample
-- Ensure that the correct [CUDA](https://developer.nvidia.com/cuda-toolkit-archive) and [cuDNN](https://developer.nvidia.com/rdp/cudnn-archive) library versions are installed to support [PyTorch 1.8.1](https://pytorch.org/get-started/previous-versions/) (tested with CUDA 11.1)
+- Ensure that the correct [CUDA](https://developer.nvidia.com/cuda-toolkit-archive) and [cuDNN](https://developer.nvidia.com/rdp/cudnn-archive) library versions are installed to support [PyTorch 1.8.2 LTS](https://pytorch.org/) (tested with CUDA 11.1)
 - Download [Python for Windows](https://www.python.org/getit/windows/) (tested with Python 3.7.9)
 - In the `pytorch-sandbox/` directory, create the virtual environment setup for training as below
 
 ```
 python -m virtualenv -p 3.7 venv
 .\venv\Scripts\activate
-pip install torch==1.8.1+cu111 torchvision==0.9.1+cu111 torchaudio===0.8.1 -f https://download.pytorch.org/whl/torch_stable.html
+
+# For training on NVIDIA 3000 series GPUs (CUDA 11.1 support)
+pip install torch==1.8.2+cu111 torchvision==0.9.2+cu111 torchaudio===0.8.2 -f https://download.pytorch.org/whl/lts/1.8/torch_lts.html
+
+# For optimal inference on the HoloLens 2 - RECOMMENDED
+pip install -f https://download.pytorch.org/whl/torch_stable.html torch===1.4.0 torchvision===0.5.0
+
+# Install requirements
 pip install -r requirements.txt
 ```
 ### Confirm data extraction
@@ -197,11 +204,12 @@ Mean recall: 81.44 +-  8.33
 ## Inference on the HoloLens 2
 
 ### About
+- Optimal performance is achieved using version 19041 builds. In this sample I am using build 19041.1161 (Windows Holographic, version 20H2 - August 2021 Update) which can be downloaded from MSFT via the following [link](https://aka.ms/hololens2download/10.0.19041.1161) and installed using the [Advanced Recovery Companion](https://www.microsoft.com/en-ca/p/advanced-recovery-companion/9p74z35sfrs8?rtc=1&activetab=pivot:overviewtab)
 - Tested with Unity 2019.4 LTS, Visual Studio 2019, and the HoloLens 2
 - Input video frames of size `(1, 3, 224, 224)` and `(10, 3, 224, 224)` were tested for online inference `(NCWH)`
 - Pretrained PyTorch weights of the SurgeonAssist-Net framework were formatted and exported to an ONNX model format for use 
 
-### *Optional*: Build runtimes from source
+### *Optional*: Build runtimes from source for ARM (PyTorch 1.8.2 LTS + Microsoft AI Machine Learning NuGet)
 - Open the `OpenCVRuntimeComponent` solution in Visual Studio
 - Using the Nuget package manager console, install the `OpenCV.Windows.3411.0.0.nupkg` NuGet package to the `OpenCVSandbox` project and `OpenCV.HoloLens.3411.0.0.nupkg` to the `OpenCVRuntimeComponent` project 
 - Also included is the `microsoft.ai.machinelearning.1.8.1.nupkg` package which includes the relevant ONNX runtime requirements for loading the ONNX model and performing inference
@@ -215,11 +223,24 @@ Install-Package ..\OpenCV.HoloLens.3411.0.0.nupkg -ProjectName OpenCVRuntimeComp
   - Output build directory `OpenCVRuntimeComponent/ARM/(Release/Debug)/OpenCVRuntimeComponent/`
 - For use in Unity, copy the files in the output build directory above to the `unity-sandbox/HoloLens2-Machine-Learning/Assets/Plugins/ARM/` folder
 
+### *Optional*: Build runtimes from source for ARM64 (PyTorch 1.4)
+- The `microsoft.ai.machinelearning.1.8.1.nupkg` component does not have support for ARM64 operation currently
+- If using ARM64, use the default `Windows.AI.MachineLearning` libraries instead of the `Microsoft.AI.MachineLearning` which are included in the Nuget package described in the prior step
+  - **ARM64 and the `Windows.AI.MachineLearning` libraries will result in better inference speeds at the cost of requiring an older version of PyTorch (1.4) and ONNX Opset (<=9) for training and ONNX model export (meaning the new 3000 series NVIDIA GPUs are not supported)**
+- Open the `OpenCVRuntimeComponent` solution in Visual Studio
+```
+Install-Package ..\OpenCV.HoloLens.3411.0.0.nupkg -ProjectName OpenCVRuntimeComponent
+```
+- `OpenCVRuntimeComponent` can be built to `.winmd` and `.dll` files which are used for the HoloLens 2 app
+  - Output build directory `OpenCVRuntimeComponent/ARM64/(Release/Debug)/OpenCVRuntimeComponent/`
+- For use in Unity, copy the files in the output build directory above to the `unity-sandbox/HoloLens2-Machine-Learning/Assets/Plugins/ARM64/` folder
+
+### *Optional*: Build configurations
 The build configurations for each of the projects are as follows:
 
 |   | OpenCVSandbox | OpenCVRuntimeComponent |
 |---|---|---|
-| Platform | `x64` (Debug/Release)  |  `ARM` (Debug/Release) |   
+| Platform | `x64` (Debug/Release)  |  `ARM/ARM64` (Debug/Release) |   
 | Output  | To console window  | To build dir (`.winmd` `.dll` `.lib`)  |   
 |   |   |   |   
 
@@ -256,7 +277,7 @@ local_output: tensor([[ 0.1532, 5.9982, -0.3814, -4.1019, 0.9841, 1.8995, -4.383
 ```
 #### 2. Testing model inference in Python with PyTorch and OpenCV transforms using ONNX with the `scratchpad.py` script
 ```
-python .\scratchpad.py --onnx_model_name="onnx-models/b0_lite_1.onnx" --seq=1
+python .\scratchpad.py --onnx_model_name="onnx-models/PyTorch_1.8.2_LTS/b0_lite_1.onnx" --seq=1
 ```
 - The console output will give similar image statistics of the normalized input (as above) for normalization in PyTorch and OpenCV as well as the accompanying images
 - It is important that the OpenCV normalization matches what is performed in PyTorch to ensure that we receive the correct inference results when running online on the HoloLens 2
@@ -285,7 +306,7 @@ outputs pytorch normalized:  [array([[ 0.15243927, 5.998246, -0.3819655, -4.1016
 
 #### 3. Evaluating model inference in Python with OpenCV and ONNX with the `scratchpad-video.py` script
 ```
-python .\scratchpad-video.py --onnx_model_name="onnx-models/b0_lite_1.onnx" --seq=1
+python .\scratchpad-video.py --onnx_model_name="onnx-models/PyTorch_1.8.2_LTS/b0_lite_10.onnx" --seq=10
 ```
 - A sample segment of `Video41` of the Cholec80 test partition is provided along with the ground truth labels
 - Qualitative performance and inference speed assessment using OpenCV and ONNX in a Python script
@@ -295,11 +316,24 @@ python .\scratchpad-video.py --onnx_model_name="onnx-models/b0_lite_1.onnx" --se
 ![](pytorch-sandbox/onnx-models/video41_inference.PNG)
 
 ### Deploy and run the sample on the HoloLens 2
-- *Optional*: If `OpenCVRuntimeComponent` was built from source, copy `.winmd`, `.dll` and `.lib` files from `OpenCVRuntimeComponent/ARM/(Release/Debug)/OpenCVRuntimeComponent/` to the Unity plugins directory `unity-sandbox/HoloLens2-Machine-Learning/Assets/Plugins/ARM/` folder
+- *Optional*: If `OpenCVRuntimeComponent` was built from source, copy `.winmd`, `.dll` and `.lib` files from `OpenCVRuntimeComponent/[ARM/ARM64]/(Release/Debug)/OpenCVRuntimeComponent/` to the Unity plugins directory `unity-sandbox/HoloLens2-Machine-Learning/Assets/Plugins/[ARM/ARM64]/` folder
 - Open `HoloLens2-Machine-Learning` in Unity
-- Switch build platform to `Universal Windows Platform`, select `HoloLens` for target device, and `ARM` as the target platform
+- Switch build platform to `Universal Windows Platform`, select `HoloLens` for target device, and `ARM/ARM64` as the target platform depending on which PyTorch version you have used for training 
+  1. PyTorch 1.8.2 LTS: Require `ARM` + Microsoft AI Machine Learning NuGet for HoloLens 2 inference to work
+      - In `NetworkModel.cs` and `model.cs`, ensure that you are using the correct library from the Microsoft AI Machine Learning Nuget with the statement: `using Microsoft.AI.MachineLearning;`
+  2. PyTorch 1.4: Require `ARM64` for HoloLens 2 inference to work **(optimal performance)**
+      - In `NetworkModel.cs` and `model.cs`, ensure that you are using the correct library from the default Windows AI Machine Learning Nuget with the statement: `using Windows.AI.MachineLearning;`
 - Build Visual Studio project and open the `.sln` file
-- Copy the `b0_lite_1.onnx` from the `pytorch-sandbox/onnx-models/` folder to the `Builds/WSAPlayer/ArUcoDetectionHoloLensUnity/Assets` folder
+- If PyTorch 1.8.2 LTS was used for ONNX export:
+  - Copy the `b0_lite_1.onnx` from the `pytorch-sandbox/onnx-models/PyTorch_1.8.2_LTS` folder to the `Builds/WSAPlayer/ArUcoDetectionHoloLensUnity/Assets` folder
+  - Your ONNX model should appear as below (using the [WinMLDashboard tool](https://github.com/microsoft/Windows-Machine-Learning/tree/master/Tools/WinMLDashboard)) with Opset version <=9 and irVersion = 6. This ONNX model will result in a runtime error using the WinMLDashboard tools `Run` utility, meaning that it requires `ARM` configuration for building on the HoloLens 2 and the additional `Microsoft.AI.MachineLearning` NuGet package
+
+  ![](pytorch-sandbox/onnx-models/onnx-model-reqs-ir6.PNG)
+
+- If PyTorch 1.4 was used for ONNX export:
+  - Copy the `b0_lite_1.onnx` from the `pytorch-sandbox/onnx-models/PyTorch_1.4` folder to the `Builds/WSAPlayer/ArUcoDetectionHoloLensUnity/Assets` folder
+  - Your ONNX model should appear as below (using the [WinMLDashboard tool](https://github.com/microsoft/Windows-Machine-Learning/tree/master/Tools/WinMLDashboard)) with Opset version <=9 and irVersion = 4. If the ONNX model runs without errors using the WinMLDashboard tools `Run` utility, it will run on the HoloLens 2 using the `Windows.AI.MachineLearning` default libraries
+  ![](pytorch-sandbox/onnx-models/onnx-model-reqs.PNG)
 - Import to Visual Studio project as an existing file, place in the assets folder
 - In the asset properties window (as below), confirm that the `Content` field has its boolean value set to `True`. This enables the `ONNX` model to be loaded at runtime from the Visual Studio assets folder
 
@@ -308,9 +342,19 @@ python .\scratchpad-video.py --onnx_model_name="onnx-models/b0_lite_1.onnx" --se
 - Build and deploy the `.sln` to the HoloLens 2. An on-screen text window will output information as to the current model prediction label, prediction probability, and inference time 
   - Alternatively, the included `.appx` package can be installed directly to the HoloLens 2 device using the device portal 
   - `.appx` is located in the `unity-sandbox/HoloLens2-Machine-Learning/Builds/WSAPlayer/AppPackages/HoloLens-2-Machine-Learning/HoloLens-2-Machine-Learning_1.0.1.0_ARM_Test/` folder
-- The below image was recorded using the HoloLens 2 Device Portal capture window while viewing Video 41 of the Cholec80 dataset (~35 seconds in) and using the `b0_lite_1.onnx` model for inference
+
+### Images from online inference
+#### Using `PyTorch_1.8.2_LTS/b0_lite_1.onnx`
+- The below image was recorded using the HoloLens 2 Device Portal capture window while viewing Video 41 of the Cholec80 dataset (~35 seconds in) and using the `PyTorch_1.8.2_LTS/b0_lite_1.onnx` model for inference. This sample was build using `ARM` and the `Microsoft.AI.MachineLearning` libraries with an ONNX model exported from PyTorch 1.8.2 LTS
+- Inference speeds of roughly 800 - 1200 ms are typical
 
 ![](unity-sandbox/HoloLens2-Machine-Learning/cholec80_vid41_HoloLens.png)
+
+#### Using `PyTorch_1.4/b0_lite_1.onnx`
+- This second image was recorded using the HoloLens 2 Device Portal capture window while viewing Video 41 of the Cholec80 dataset (~35 seconds in) and using the `PyTorch_1.4/b0_lite_1.onnx` model for inference. This sample was build using `ARM64` and the default `Windows.AI.MachineLearning` libraries with an ONNX model exported from PyTorch 1.4 - notice the reduction in required inference time of this approach
+- Inference speeds of roughly 200 - 350 ms are typical
+
+![](unity-sandbox/HoloLens2-Machine-Learning/cholec80_vid41_HL2_Pt1.4.jpg)
 
 ## Citation
 If you found this code repo useful, please consider citing the associated publication:

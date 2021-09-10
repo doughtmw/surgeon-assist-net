@@ -58,7 +58,7 @@ def train(training_generator, validation_generator, model, params):
         # Multiple GPU support
         if torch.cuda.device_count() > 1:
             print("Let's use", torch.cuda.device_count(), "GPUs!")
-        model = torch.nn.DataParallel(model)
+        model = torch.nn.DataParallel(model, device_ids=[0])
         model.to(params['device'])
     else:
         model.to(params['device'])
