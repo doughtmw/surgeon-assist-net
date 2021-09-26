@@ -359,10 +359,13 @@ python .\scratchpad-video.py --onnx_model_name="onnx-models/PyTorch_1.8.2_LTS/b0
 ## Citation
 If you found this code repo useful, please consider citing the associated publication:
 ```
-@article{doughty2021surgeonassist,
-  title={SurgeonAssist-Net: Towards Context-Aware Head-Mounted Display-Based Augmented Reality for Surgical Guidance},
-  author={Doughty, Mitchell and Singh, Karan and Ghugre, Nilesh R},
-  journal={arXiv preprint arXiv:2107.06397},
-  year={2021}
+@inproceedings{doughty2021surgeonassist,
+    author={Doughty, Mitchell and Singh, Karan and Ghugre, Nilesh R.}
+    title={SurgeonAssist-Net: Towards Context-Aware Head-Mounted Display-Based Augmented Reality for Surgical Guidance},
+    booktitle={Medical Image Computing and Computer Assisted Intervention -- MICCAI 2021},
+    year={2021},
+    publisher={Springer International Publishing},
+    pages={667--677},
+    isbn={978-3-030-87202-1}
 }
 ```
