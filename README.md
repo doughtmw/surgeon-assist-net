@@ -3,6 +3,8 @@
 We present SurgeonAssist-Net: a lightweight framework making action-and-workflow-driven virtual assistance, for a set of predefined surgical tasks, accessible to commercially available optical see-through head-mounted displays (OST-HMDs).
 - [Link to pre-print on arXiv](https://arxiv.org/abs/2107.06397)
 
+![](fig/surgeonassist-net.gif)
+
 ## Table of contents
 - [Project setup](#project-setup)
 - [Data](#data)
