@@ -5,6 +5,9 @@ We present SurgeonAssist-Net: a lightweight framework making action-and-workflow
 
 ![](fig/surgeonassist-net.gif)
 
+*Note: Gif playback is at 1.5x speed.*
+
+
 ## Table of contents
 - [Project setup](#project-setup)
 - [Data](#data)
